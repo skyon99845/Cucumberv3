@@ -1,0 +1,238 @@
+package StepDefinitionRedBus;
+
+import PageFactoryModel.RedBus;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import io.cucumber.java.eo.Se;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.Select;
+import org.testng.annotations.Listeners;
+import org.testng.annotations.Test;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.codehaus.plexus.util.StringUtils.isNumeric;
+
+
+@Listeners(Listerners.Listeners.class)
+@Test
+public class SearchBus {
+    public static WebDriver driver;
+    public static RedBus obj;
+    //driver = new void ChromeDriver();
+    @Given("User Enters the Destination and To and Date and Search")
+    public void user_enters_the_destination_and_to_and_date_and_search() throws InterruptedException {
+
+        //System.out.println("Welcome Shubham Kumar");
+        WebDriverManager.chromedriver().setup();
+        WebDriver driver = new ChromeDriver();
+
+        RedBus obj = new RedBus(driver);
+        obj.visitWebsite();
+        driver.manage().window().maximize();
+        Thread.sleep(2000);
+        WebElement selectFrom = driver.findElement(By.id("src"));
+        selectFrom.click();
+        Thread.sleep(2000);
+        selectFrom.sendKeys("Banglore");
+        Thread.sleep(4000);
+
+        List<WebElement> options = driver.findElements(By.xpath("//ul[@class='autoFill homeSearch']/li"));
+        for(WebElement option : options)
+        {
+            //System.out.println("The elements are :"+option.getText());
+            if(option.getText().equalsIgnoreCase("Bangalore Airport, Bangalore"))
+            {
+                option.click();
+                break;
+            }
+        }
+
+        //Selecting the To
+        driver.findElement(By.id("dest")).click();
+        Thread.sleep(2000);
+        driver.findElement(By.id("dest")).sendKeys("Pune");
+        Thread.sleep(2000);
+        List<WebElement> optionss = driver.findElements(By.xpath("//ul[@class='autoFill homeSearch']/li"));
+        for(WebElement option : optionss)
+        {
+            //System.out.println("The elements are :"+option.getText());
+            if(option.getText().equalsIgnoreCase("Pune"))
+            {
+                option.click();
+                break;
+            }
+        }
+
+
+        //System.out.println("Successfully Logout");
+        WebElement selectDate = driver.findElement(By.cssSelector("input[id=\"onward_cal\"]"));
+
+        selectDate.click();
+        Thread.sleep(1000);
+        //button to move next in calendar
+
+        WebElement nextLink = driver.findElement(By.className("next"));
+        nextLink.click();
+        Thread.sleep(1000);
+
+        //button to click in center of calendar header
+
+        //WebElement midLink = driver.findElement(By.className("monthTitle"));
+        WebElement midLink = driver.findElement(By.xpath("//td[@class=\"monthTitle\"]"));
+        //midLink.click();
+        Thread.sleep(500);
+        //button to move previous month in calendar
+        //System.out.println("Level1");
+        WebElement previousLink = driver.findElement(By.className("prev"));
+        //previousLink.click();
+        Thread.sleep(500);
+        //System.out.println("Level 2");
+
+        //System.out.println("Level 3");
+        LocalDate date = LocalDate.now();
+        String dd = date.toString();
+        //System.out.println("The date is :"+dd);
+        driver.findElement(By.xpath("//td[normalize-space()='14']")).click();
+        Thread.sleep(500);
+
+        WebElement searchButton= driver.findElement(By.id("search_btn"));
+        searchButton.click();
+        Thread.sleep(6000);
+
+        //String parent = "//div[@class=\"clearfix bus-item\"]";
+        String parent = "//div [@class=\"clearfix bus-item\"]";
+        // origionalString child1 = "//span[@class=\"f-19 f-bold\"]/text()";
+        String child1 = "//span[@class=\"f-19 f-bold\"]";//bus ticket
+        String child2 = "//div[@class=\"travels lh-24 f-bold d-color\"]";//busname
+        //String busFareCombined = parent+" "+child1;
+        String busFareCombined = "//div[@class=\"fare d-block\"] //span[contains(@class,'f-19')]";
+        String busNameCombined = parent+" "+child2;
+        String BusName ="//div [@class=\"travels lh-24 f-bold d-color\"]";
+
+        //busFareCombined     -   //div [@class="clearfix bus-item"] //span[@class="f-19 f-bold"]
+
+
+        //---------------New code for the Scroll Down
+        try {
+            long temp = 0;
+            while (true) {
+                ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight);");
+                Thread.sleep(5000);
+                long start = (Long) ((JavascriptExecutor) driver).executeScript("return document.body.scrollHeight");
+                if (start == temp) {
+                    break;
+                }
+                temp = start;
+            }
+            System.out.println("completed the scroll");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+ //------------- Code for JavaScript pixel
+        //---------------New code for the Scroll Down
+        //-----------Line number 140  -- 165
+//        Thread.sleep(3000);
+//        int size =0;
+//
+//        //---------------------    Code To Find the Bus Fare Price
+//        Thread.sleep(6000);
+        //List<WebElement> busFarePrice = driver.findElements(By.xpath(busFare.toString()));
+        //List<WebElement> busFarePrice = driver.findElements(By.xpath("//li[@class=\"row-sec clearfix\"] //span[@class=\"f-19 f-bold\" ]"));
+        //List<WebElement> busFarePrice = driver.findElements(By.xpath("//ul[@class=\"bus-items\"] //span[@class=\"f-19 f-bold\"]"));
+        List<WebElement> busFarePrice = driver.findElements(By.xpath(busFareCombined));
+//        System.out.println("Bus Ticket :"+busFarePrice);
+//
+//
+//
+//
+//        //------------------------- Printing the size of the busFarePrice collection
+//        System.out.println("The Size of the Bus Fare Price Collection is:"+busFarePrice.size());
+//        Thread.sleep(3000);
+//        //System.out.println("Printing the Bus Name");
+//
+//
+//        //Printing the Bus Name List
+//        //List<WebElement> busNameList = driver.findElements(By.xpath("//div [@class=\"travels lh-24 f-bold d-color\"]"));
+          List<WebElement> busNameList = driver.findElements(By.xpath(busNameCombined));
+//        System.out.println("The busName List is:"+busNameList);
+//        System.out.println("The size of the Collection busNameList is :"+busNameList.size());
+
+//--------------------Printing the List of busPrice---
+//        int k=0;
+//        for(WebElement ee: busFarePrice)
+//        {
+//
+//            System.out.println(k+"The busFarePrice :"+ee.getText());
+//            k++;
+//        }
+//        int m=0;
+//        for(WebElement eee: busNameList)
+//        {
+//
+//            System.out.println(m+"The busNameList :"+eee.getText());
+//            m++;
+//        }
+
+
+
+//---------------Displaying the Code for the parallel bus and ticket
+//        int ik=0;
+//        for(ik=0;ik<28;ik++)
+//        {
+//            System.out.println(ik+"The Bus Name is:"+busNameList.get(ik).getText()+" THe Bus Ticket is:"+busFarePrice.get(ik).getText());
+//        }
+
+
+//---------------Printing The Bus Name and The Bus Ticket with the Condition that the ticket should be 2000 and 3000
+
+        int ik=1;
+        for(int i=0;i<= busFarePrice.size()-1;i++)
+        {
+            if(Integer.parseInt(busFarePrice.get(i).getText())>=2000 && Integer.parseInt(busFarePrice.get(i).getText())<=3000)
+            {
+
+                Thread.sleep(2000);
+                System.out.println("\n\nIndex is :"+ik);
+                System.out.println("The Bus Ticket Price is :"+Integer.parseInt(busFarePrice.get(i).getText()));
+                //System.out.println("The busName is :"+driver.findElement((By.xpath(BusName.toString()))).getText());
+                System.out.println("The busName is :"+busNameList.get(i).getText());
+                ik++;
+                Thread.sleep(100);
+            }
+            //System.out.println("The bus price through for loop is:"+busFarePrice.get(i).getText());
+        }
+
+
+
+        //--------------------Quitting the Browser
+        driver.quit();
+
+    }
+
+    @When("User Select the Sort by Price")
+    public void user_select_the_sort_by_price() {
+        System.out.println("The Element has been selected");
+    }
+
+    @Then("User Selects the Price Ticket Between {int} to {int}")
+    public void user_selects_the_price_ticket_between_to(Integer int1, Integer int2) {
+        //System.out.println("Displaying the Busname with the Bus Ticket price");
+        System.out.println("I am quitting");
+
+    }
+
+
+
+}
